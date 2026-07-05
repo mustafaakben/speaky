@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "Speaky: A voice-notification skill for AI coding agents"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Akben
+    given-names: Mustafa
+    name-suffix: PhD
+    affiliation: "Assistant Professor of Management & Director of AI Integration"
+repository-code: "https://github.com/mustafaakben/speaky"
+url: "https://github.com/mustafaakben/speaky"
+license: MIT
+version: 1.0.0
+date-released: "2026-07-05"
+keywords:
+  - text-to-speech
+  - coding-agents
+  - notifications
+  - gemini
+  - claude-code

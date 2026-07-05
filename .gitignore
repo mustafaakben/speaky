@@ -1,0 +1,26 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Generated audio
+*.wav
+speaky-*.wav
+
+# Backups
+*.bak
+.backups/
+.backup/
+
+# Memory Remember
+.memory/
+.convo/
+.remember/
+
+# Claude Codex Agents
+.claude/
+.codex/
+.agents/
+.agent/

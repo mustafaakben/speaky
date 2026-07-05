@@ -1,0 +1,2 @@
+# Premium mode only (Gemini TTS). Native mode needs nothing extra.
+google-genai>=0.3.0
