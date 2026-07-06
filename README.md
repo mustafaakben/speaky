@@ -12,8 +12,8 @@ Works with any coding agent that can run a shell command - Claude Code, Cursor,
 Codex, Gemini CLI, Aider, or your own scripts. It's just a Python script the
 agent calls; drop it wherever your agent loads skills or tools.
 
-It plays a short attention beep, then talks to you like a teammate giving a
-quick verbal recap. Two engines:
+It talks to you like a teammate giving a quick verbal recap, and can play a
+soft attention nudge first (add `--beep`). Two engines:
 
 - **Premium (Gemini TTS)** - an expressive, warm voice that understands emotion
   cues like `[excited]` or `[hesitant]` and natural fillers ("hmm", "umm").
@@ -145,7 +145,7 @@ Your agent runs this for you - but you can run it directly to test.
 | `--list-voices` | Print all 30 voices + aliases and exit |
 | `--model NAME` | `flash` (default, most expressive) · `free` (2.5-flash, free tier) · `pro` |
 | `--free` | Shortcut for `--model free` |
-| `--no-beep` | Skip the attention beeps |
+| `--beep` | Play a soft attention nudge before speaking (off by default) |
 | `--no-play` | Generate the WAV without playing it (premium) |
 | `--out PATH` | Save the WAV to a specific path (premium) |
 
@@ -205,7 +205,7 @@ python scripts/speak.py "[whispers] psst... [long pause] the deploy's done. [exc
 |---|---|---|---|---|
 | Native voice | PowerShell `System.Speech` | `say` | `spd-say` → `espeak` | Linux tools, then Windows `System.Speech` |
 | WAV playback (premium) | `winsound` | `afplay` | `paplay`/`aplay`/`ffplay` | Linux player, then Windows `SoundPlayer` |
-| Attention beeps | `winsound.Beep` | synthesized tone | synthesized tone | same playback path as WAV audio |
+| Attention nudge (`--beep`) | `winsound.Beep` | synthesized tone | synthesized tone | same playback path as WAV audio |
 
 Emotion tags like `[hesitant]` are Gemini cues. In native mode the script
 strips them automatically so they're never read aloud literally.

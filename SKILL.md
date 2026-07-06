@@ -5,7 +5,7 @@ description: Speak to the user out loud through their speakers. Use this wheneve
 
 # Speaky
 
-Speak text out loud to the user through their system speakers, preceded by a subtle attention nudge (a soft tone that fades out, twice) so they notice even from another screen.
+Speak text out loud to the user through their system speakers. Add `--beep` to play a subtle attention nudge first (a soft tone that fades out, twice) so they notice even from another screen - useful when the user stepped away; off by default.
 
 Two ways to speak:
 
@@ -27,6 +27,12 @@ Force a mode explicitly:
 ```bash
 python scripts/speak.py "Quick update" --mode native
 python scripts/speak.py "Quick update" --mode premium
+```
+
+Add an attention nudge before the voice (good when the user stepped away or asked to be alerted):
+
+```bash
+python scripts/speak.py "Build finished." --beep
 ```
 
 ## Writing good spoken messages
@@ -114,7 +120,7 @@ python scripts/speak.py "[surprised] Huh, the API returns duplicate records but 
 | `--list-voices` | Print all voices + aliases and exit |
 | `--model NAME` | `flash` (default, most expressive) / `free` (2.5-flash, free tier) / `pro` |
 | `--free` | Shortcut for `--model free` |
-| `--no-beep` | Skip the attention beeps |
+| `--beep` | Play a soft attention nudge before speaking (off by default) |
 | `--no-play` | Generate the WAV without playing it (premium; for recordings) |
 | `--out PATH` | Save the WAV to a specific path (premium) |
 

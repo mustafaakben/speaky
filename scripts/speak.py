@@ -16,7 +16,7 @@ Usage:
     python speak.py "Text to say out loud"
     python speak.py "Text" --mode native
     python speak.py "Text" --style "calm, slow, late-night radio"
-    python speak.py "Text" --voice Enceladus --no-beep
+    python speak.py "Text" --voice Enceladus --beep
     python speak.py "Text" --no-play          # generate WAV only (premium)
 """
 
@@ -440,7 +440,13 @@ def main():
     )
     parser.add_argument("--out", default=None, help="Where to save the WAV (premium)")
     parser.add_argument("--no-play", action="store_true", help="Generate only, don't play")
-    parser.add_argument("--no-beep", action="store_true", help="Skip attention beeps")
+    parser.add_argument(
+        "--beep", action="store_true",
+        help="Play a soft attention nudge before speaking (off by default)",
+    )
+    # Legacy no-op: beeps are now off by default. Kept so older invocations
+    # of `--no-beep` don't error out.
+    parser.add_argument("--no-beep", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument(
         "--list-voices", action="store_true",
         help="Print available voices and aliases, then exit",
@@ -469,7 +475,7 @@ def main():
         tempfile.gettempdir(), f"speaky-{time.strftime('%Y%m%d-%H%M%S')}.wav"
     )
 
-    if not args.no_beep and not args.no_play:
+    if args.beep and not args.no_beep and not args.no_play:
         play_beeps()
 
     if mode == "native":
