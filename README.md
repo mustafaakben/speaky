@@ -201,11 +201,11 @@ python scripts/speak.py "[whispers] psst... [long pause] the deploy's done. [exc
 
 ## How it works
 
-| Concern | Windows | macOS | Linux |
-|---|---|---|---|
-| Native voice | PowerShell `System.Speech` | `say` | `spd-say` → `espeak` |
-| WAV playback (premium) | `winsound` | `afplay` | `paplay`/`aplay`/`ffplay` |
-| Attention beeps | `winsound.Beep` | synthesized tone | synthesized tone |
+| Concern | Windows | macOS | Linux | WSL |
+|---|---|---|---|---|
+| Native voice | PowerShell `System.Speech` | `say` | `spd-say` → `espeak` | Linux tools, then Windows `System.Speech` |
+| WAV playback (premium) | `winsound` | `afplay` | `paplay`/`aplay`/`ffplay` | Linux player, then Windows `SoundPlayer` |
+| Attention beeps | `winsound.Beep` | synthesized tone | synthesized tone | same playback path as WAV audio |
 
 Emotion tags like `[hesitant]` are Gemini cues. In native mode the script
 strips them automatically so they're never read aloud literally.
