@@ -1,2 +1,3 @@
 # Premium mode only (Gemini TTS). Native mode needs nothing extra.
+# Note: the package is google-genai (the new SDK), NOT google-generativeai.
 google-genai>=0.3.0

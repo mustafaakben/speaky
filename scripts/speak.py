@@ -125,6 +125,19 @@ SYSTEM = platform.system()  # "Windows", "Darwin", "Linux"
 _EMOTION_TAG = re.compile(r"\[[^\]\n]{0,40}\]")
 
 
+def _is_wsl() -> bool:
+    """Detect WSL, which reports as Linux but can route audio through Windows."""
+    if SYSTEM != "Linux":
+        return False
+    if os.environ.get("WSL_DISTRO_NAME"):
+        return True
+    try:
+        version = Path("/proc/version").read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+    return "microsoft" in version.lower() or "wsl" in version.lower()
+
+
 def strip_expressive(text: str) -> str:
     """Remove bracketed emotion tags so native TTS never reads them aloud."""
     return re.sub(r"\s{2,}", " ", _EMOTION_TAG.sub("", text)).strip()
@@ -208,6 +221,71 @@ def _which(*names):
     return None
 
 
+def _play_wav_via_windows(path: str) -> bool:
+    """Play from WSL through Windows when Linux has no audio stack available."""
+    if not _is_wsl():
+        return False
+
+    powershell = _which("powershell.exe", "pwsh.exe")
+    if not powershell:
+        return False
+
+    try:
+        win_temp = subprocess.check_output(
+            ["cmd.exe", "/C", "echo", "%TEMP%"], text=True
+        ).strip()
+        wsl_temp = subprocess.check_output(
+            ["wslpath", "-u", win_temp], text=True
+        ).strip()
+        temp_dir = Path(wsl_temp)
+        temp_dir.mkdir(parents=True, exist_ok=True)
+
+        local_copy = temp_dir / f"speaky-{time.strftime('%Y%m%d-%H%M%S')}-{os.getpid()}.wav"
+        shutil.copyfile(path, local_copy)
+        win_path = subprocess.check_output(
+            ["wslpath", "-w", str(local_copy)], text=True
+        ).strip()
+    except Exception:
+        return False
+
+    escaped_path = win_path.replace("'", "''")
+    ps = (
+        f"$path = '{escaped_path}'; "
+        "$player = New-Object System.Media.SoundPlayer; "
+        "$player.SoundLocation = $path; "
+        "$player.Load(); "
+        "$player.PlaySync()"
+    )
+    result = subprocess.run([powershell, "-NoProfile", "-Command", ps], check=False)
+    return result.returncode == 0
+
+
+def _native_speak_via_windows(text: str) -> bool:
+    """Speak from WSL through Windows System.Speech when Linux has no synthesizer.
+
+    The text crosses the WSL->Windows boundary via WSLENV, since normal
+    environment variables are not shared between the two."""
+    if not _is_wsl():
+        return False
+
+    powershell = _which("powershell.exe", "pwsh.exe")
+    if not powershell:
+        return False
+
+    ps = (
+        "Add-Type -AssemblyName System.Speech; "
+        "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
+        "$s.Volume = 100; $s.Speak($env:SPEAKY_TEXT)"
+    )
+    wslenv = os.environ.get("WSLENV", "")
+    wslenv = f"{wslenv}:SPEAKY_TEXT" if wslenv else "SPEAKY_TEXT"
+    env = dict(os.environ, SPEAKY_TEXT=text, WSLENV=wslenv)
+    result = subprocess.run(
+        [powershell, "-NoProfile", "-Command", ps], env=env, check=False
+    )
+    return result.returncode == 0
+
+
 def play_wav(path: str):
     """Play a WAV file using whatever the platform provides."""
     if SYSTEM == "Windows":
@@ -226,6 +304,8 @@ def play_wav(path: str):
             if player.endswith("ffplay"):
                 args = [player, "-autoexit", "-nodisp", "-loglevel", "quiet", path]
             subprocess.run(args, check=False)
+            return
+        if _play_wav_via_windows(path):
             return
     raise RuntimeError("No audio player found for WAV playback")
 
@@ -312,6 +392,8 @@ def native_speak(text: str):
     espeak = _which("espeak-ng", "espeak")
     if espeak:
         subprocess.run([espeak, text], check=False)
+        return
+    if _native_speak_via_windows(text):
         return
     raise RuntimeError(
         "No native speech synthesizer found. Install one of: "

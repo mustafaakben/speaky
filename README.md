@@ -225,6 +225,13 @@ to mark it as AI-generated.
   (`paplay`), `alsa-utils` (`aplay`), or `ffmpeg` (`ffplay`).
 - **Premium silently uses native:** `GEMINI_API_KEY` isn't set or is invalid -
   the script prints the reason to stderr before falling back.
+- **`ImportError: cannot import name 'genai' from 'google'`:** the required
+  package is `google-genai` (the new Google SDK), not the older
+  `google-generativeai`. Run `pip install -r requirements.txt` to get the
+  right one.
+- **Running under WSL:** speaky detects WSL and routes audio through Windows
+  automatically (Windows `SoundPlayer` for playback, `System.Speech` for the
+  native voice), so you don't need a Linux audio stack inside WSL.
 
 ---
 

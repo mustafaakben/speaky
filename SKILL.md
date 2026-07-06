@@ -126,7 +126,7 @@ python scripts/speak.py "[surprised] Huh, the API returns duplicate records but 
 
 ## Setup
 
-- **Native mode:** nothing to install on macOS/Windows. On Linux, install a synthesizer: `speech-dispatcher` (`spd-say`) or `espeak-ng`.
+- **Native mode:** nothing to install on macOS/Windows. On Linux, install a synthesizer: `speech-dispatcher` (`spd-say`) or `espeak-ng`. Under WSL, audio routes through Windows automatically, so nothing extra is needed.
 - **Premium mode:** `pip install -r requirements.txt` and set `GEMINI_API_KEY` (see `.env.example`).
 
 See `README.md` for full setup and troubleshooting.
